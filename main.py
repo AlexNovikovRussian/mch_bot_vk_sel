@@ -19,21 +19,21 @@ for event in longpoll.listen():
             request = event.text
             if(request == "/get"):
 
-				dr.get("https://www.mos.ru/pgu/ru/services/procedure/0/0/7700000010000187206/")
+		dr.get("https://www.mos.ru/pgu/ru/services/procedure/0/0/7700000010000187206/")
 
-				el = dr.find_elements_by_xpath("//*[contains(text(), 'Получить услугу')]")
-				el[0].click()
+		el = dr.find_elements_by_xpath("//*[contains(text(), 'Получить услугу')]")
+		el[0].click()
 
-				l = dr.find_element_by_id('login')
-				l.send_keys("+79775543041")
+		l = dr.find_element_by_id('login')
+		l.send_keys("+79775543041")
 
-				l = dr.find_element_by_id('password')
-				l.send_keys("14121416alex9")
+		l = dr.find_element_by_id('password')
+		l.send_keys("14121416alex9")
 
-				l = dr.find_element_by_id('bind')
-				l.submit()
+		l = dr.find_element_by_id('bind')
+		l.submit()
 
-				send_message(event.user_id, "done")
+		send_message(event.user_id, "done")
 
             else:
                 send_message(event.user_id, "Ты ввёл что-то не то! Попробуй ещё раз.")
