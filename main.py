@@ -2,6 +2,7 @@ import vk_api
 from vk_api.longpoll import VkLongPoll, VkEventType
 from bs4 import BeautifulSoup as BS
 from selenium import webdriver
+from time import sleep
 
 dr = webdriver.Chrome()
 token = "0a8ce9d4fcf0b00bd08a6e4ce6110479c1108c4c9ceeb2f3c847443e80a18b3e300855317f2db97cf07b8"
@@ -31,6 +32,11 @@ for event in longpoll.listen():
 
                 l = dr.find_element_by_id('bind')
                 l.submit()
+
+                sleep(5)
+
+                l = dr.find_element_by_xpath('//mat-icon[@aria-label="logout"]')
+                l.click()
 
                 send_message(event.user_id, "done")
             else:
