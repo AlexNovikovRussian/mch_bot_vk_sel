@@ -3,9 +3,12 @@ from vk_api.longpoll import VkLongPoll, VkEventType
 from bs4 import BeautifulSoup as BS
 from selenium import webdriver
 from time import sleep
+from os import environ as env
+import datetime
+import re
 
 dr = webdriver.Chrome()
-token = "0a8ce9d4fcf0b00bd08a6e4ce6110479c1108c4c9ceeb2f3c847443e80a18b3e300855317f2db97cf07b8"
+token = env["VK_TOKEN"]
 
 vk = vk_api.VkApi(token=token)
 longpoll = VkLongPoll(vk)
@@ -25,15 +28,23 @@ for event in longpoll.listen():
                 el[0].click()
 
                 l = dr.find_element_by_id('login')
-                l.send_keys("+79775543041")
+                l.send_keys(env["MOS_LOGIN"])
 
                 l = dr.find_element_by_id('password')
-                l.send_keys("14121416alex9")
+                l.send_keys(env["MOS_PASSWORD"])
 
                 l = dr.find_element_by_id('bind')
                 l.submit()
 
-                sleep(5)
+                sleep(15)
+
+                bs = BS(dr.page_source, "html.parser")
+                today = datetime.datetime.today().strftime("%d")
+                
+                dates = bs.find_all(text=re.compile(today))
+
+                date = dates[0].parent.parent
+                print(date)
 
                 l = dr.find_element_by_xpath('//mat-icon[@aria-label="logout"]')
                 l.click()
