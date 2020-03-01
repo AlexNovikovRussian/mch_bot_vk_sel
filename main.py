@@ -46,7 +46,7 @@ for event in longpoll.listen():
                 etwd = datetime.datetime.today().strftime("%a")
                 
                 if etwd == "Sun":
-                	todayWd = "Вс"
+                	todayWd = "вс"
                 
                 todayFull = today + ", " + todayWd
                 print(todayFull)
