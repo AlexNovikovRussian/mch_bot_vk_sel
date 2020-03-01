@@ -46,8 +46,9 @@ for event in longpoll.listen():
 
                 date = dates[0].parent.parent
                 print(date)
+                print(dr.current_url)
                 
-                open("ezhd.html","w+").write(date).close()
+                #open("ezhd.html","w+").write(date).close()
 
                 l = dr.find_element_by_xpath('//mat-icon[@aria-label="logout"]')
                 l.click()
