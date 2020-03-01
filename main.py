@@ -53,7 +53,7 @@ for event in longpoll.listen():
                 
                 dates = bs.find_all(text=todayFull)
 
-                date = dates[0].parent.parent
+                date = dates[0].parent.parent.parent
                 print(date)
                 print(dr.current_url)
                 
