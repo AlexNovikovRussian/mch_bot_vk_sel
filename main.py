@@ -51,7 +51,7 @@ for event in longpoll.listen():
                 todayFull = today + ", " + todayWd
                 print(todayFull)
                 
-                dates = bs.find_all(text=today)
+                dates = bs.find_all(text=todayFull)
 
                 date = dates[0].parent.parent
                 print(date)
