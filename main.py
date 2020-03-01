@@ -42,7 +42,7 @@ for event in longpoll.listen():
                 today = datetime.datetime.today().strftime("%d")
                 print(today)
                 
-                dates = bs.find_all(text=re.compile(today))
+                dates = bs.find_all(text=today)
 
                 date = dates[0].parent.parent
                 print(date)
