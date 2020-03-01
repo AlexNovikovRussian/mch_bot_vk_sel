@@ -40,6 +40,7 @@ for event in longpoll.listen():
 
                 bs = BS(dr.page_source, "html.parser")
                 today = datetime.datetime.today().strftime("%d")
+                print(today)
                 
                 dates = bs.find_all(text=re.compile(today))
 
