@@ -11,43 +11,49 @@ class HWbot(discord.Client):
 		print('Logged on as {0}!'.format(self.user))
 
 	async def on_message(self,message):
-		channel = message.channel
-		print("Message from {0.author}: {0.content}'.format(message)")
-		if message.content == "/help":
-			await channel.send("Bot commands:\n - /get_hw - send homework information")
-		elif message.content == "/get_hw":
-			dr.get("https://www.mos.ru/pgu/ru/services/procedure/0/0/7700000010000187206/")
+		if message.author != "HW_Show#2095":
+			channel = message.channel
+			print("Message from {0.author}: {0.content}".format(message))
+			if message.content == "/help":
+				await channel.send("Bot commands:\n - /get_hw - send homework information")
+			elif message.content == "/get_hw":
+				dr.get("https://www.mos.ru/pgu/ru/services/procedure/0/0/7700000010000187206/")
 
-			el = dr.find_elements_by_xpath("//*[contains(text(), 'Получить услугу')]")
-			el[0].click()
+				el = dr.find_elements_by_xpath("//*[contains(text(), 'Получить услугу')]")
+				el[0].click()
 
-			l = dr.find_element_by_id('login')
-			l.send_keys(env["MOS_LOGIN"])
+				l = dr.find_element_by_id('login')
+				l.send_keys(env["MOS_LOGIN"])
 
-			l = dr.find_element_by_id('password')
-			l.send_keys(env["MOS_PASSWORD"])
+				l = dr.find_element_by_id('password')
+				l.send_keys(env["MOS_PASSWORD"])
 
-			l = dr.find_element_by_id('bind')
-			l.submit()
+				l = dr.find_element_by_id('bind')
+				l.submit()
 
-			sleep(12)
+				sleep(14)
 
-			bs = BS(dr.page_source, "html.parser")
+				bs = BS(dr.page_source, "html.parser")
 
-			#homework-description
-			allHW = bs.findAll("div", {'class' : "homework-description"})
+				#homework-description
+				allHW = bs.findAll("div", {'class' : "homework-description"})
 
-			for hw in allHW:
-			    await channel.send(hw.parent.parent.parent.parent.parent.findPreviousSibling('div').findChildren("h3")[0].text)
-			    await channel.send(hw.parent.parent.parent.parent.findChildren("div", {"class":"subject"})[0].findChildren("div")[0].findChildren("div")[0].findChildren("span")[0].text)
-			    await channel.send(hw.text)
+				lastDate = ""
 
-			l = dr.find_element_by_xpath('//mat-icon[@aria-label="logout"]')
-			l.click()
+				for hw in allHW:
+					date = hw.parent.parent.parent.parent.parent.findPreviousSibling('div').findChildren("h3")[0].text
+					if date != lastDate:
+						await channel.send("\n" + date)
+						lastDate = date
+					else:
+						lastDate = date
 
-		else:
-			if list(message.content)[0] == "/":
-				channel.send("Bad command! Use /help to get list of commands")
+					await channel.send(hw.parent.parent.parent.parent.findChildren("div", {"class":"subject"})[0].findChildren("div")[0].findChildren("div")[0].findChildren("span")[0].text)
+					await channel.send(hw.text)
+
+				l = dr.find_element_by_xpath('//mat-icon[@aria-label="logout"]')
+				l.click()
+
 
 
 client = HWbot()
