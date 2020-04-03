@@ -1,68 +1,55 @@
-import vk_api
-from vk_api.longpoll import VkLongPoll, VkEventType
+import discord
+from os import environ as env
 from bs4 import BeautifulSoup as BS
 from selenium import webdriver
 from time import sleep
-from os import environ as env
-import datetime
-import re
 
 dr = webdriver.Chrome()
-token = env["VK_TOKEN"]
 
-vk = vk_api.VkApi(token=token)
-longpoll = VkLongPoll(vk)
+class HWbot(discord.Client):
+	async def on_ready(self):
+		print('Logged on as {0}!'.format(self.user))
 
-def send_message(id, message):
-    print("send "+message)
-    vk.method('messages.send', {'user_id': id, 'message': message, "v":'5.69'})
+	async def on_message(self,message):
+		channel = message.channel
+		print("Message from {0.author}: {0.content}'.format(message)")
+		if message.content == "/help":
+			await channel.send("Bot commands:\n - /get_hw - send homework information")
+		elif message.content == "/get_hw":
+			dr.get("https://www.mos.ru/pgu/ru/services/procedure/0/0/7700000010000187206/")
 
-for event in longpoll.listen():
-    if event.type == VkEventType.MESSAGE_NEW:
-        if event.to_me:
-            request = event.text
-            if(request == "/get"):
-                dr.get("https://www.mos.ru/pgu/ru/services/procedure/0/0/7700000010000187206/")
+			el = dr.find_elements_by_xpath("//*[contains(text(), 'Получить услугу')]")
+			el[0].click()
 
-                el = dr.find_elements_by_xpath("//*[contains(text(), 'Получить услугу')]")
-                el[0].click()
+			l = dr.find_element_by_id('login')
+			l.send_keys(env["MOS_LOGIN"])
 
-                l = dr.find_element_by_id('login')
-                l.send_keys(env["MOS_LOGIN"])
+			l = dr.find_element_by_id('password')
+			l.send_keys(env["MOS_PASSWORD"])
 
-                l = dr.find_element_by_id('password')
-                l.send_keys(env["MOS_PASSWORD"])
+			l = dr.find_element_by_id('bind')
+			l.submit()
 
-                l = dr.find_element_by_id('bind')
-                l.submit()
+			sleep(12)
 
-                sleep(15)
+			bs = BS(dr.page_source, "html.parser")
 
-                bs = BS(dr.page_source, "html.parser")
-                today = datetime.datetime.today().strftime("%d")
-                
-                todayWd = ""
-                
-                etwd = datetime.datetime.today().strftime("%a")
-                
-                if etwd == "Sun":
-                	todayWd = "вс"
-                
-                todayFull = today + ", " + todayWd
-                print(todayFull)
-                
-                dates = bs.find_all(text=todayFull)
+			#homework-description
+			allHW = bs.findAll("div", {'class' : "homework-description"})
 
-                date = dates[0].parent.parent.parent
-                print(date)
-                print(dr.current_url)
-                
-                #open("ezhd.html","w+").write(date).close()
+			for hw in allHW:
+			    await channel.send(hw.parent.parent.parent.parent.parent.findPreviousSibling('div').findChildren("h3")[0].text)
+			    await channel.send(hw.parent.parent.parent.parent.findChildren("div", {"class":"subject"})[0].findChildren("div")[0].findChildren("div")[0].findChildren("span")[0].text)
+			    await channel.send(hw.text)
 
-                l = dr.find_element_by_xpath('//mat-icon[@aria-label="logout"]')
-                l.click()
+			l = dr.find_element_by_xpath('//mat-icon[@aria-label="logout"]')
+			l.click()
 
-                send_message(event.user_id, "done")
-            else:
-                send_message(event.user_id, "Ты ввёл что-то не то! Попробуй ещё раз.")
+		else:
+			if list(message.content)[0] == "/":
+				channel.send("Bad command! Use /help to get list of commands")
 
+
+client = HWbot()
+client.run(env["DISCORD_BOT_TOKEN"])
+	
