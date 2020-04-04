@@ -31,7 +31,7 @@ class HWbot(discord.Client):
 				l = dr.find_element_by_id('bind')
 				l.submit()
 
-				sleep(14)
+				sleep(20)
 
 				bs = BS(dr.page_source, "html.parser")
 
